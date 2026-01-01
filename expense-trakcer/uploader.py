@@ -68,6 +68,21 @@ class GoogleSheetsUploader:
         # 移除 Month 欄位
         detail_df = month_df.drop(columns=['Month']).copy()
         
+        # 格式化金額，添加幣別符號
+        currency_symbols = {
+            'TWD': 'NT$',
+            'JPY': '¥',
+            'USD': '$',
+            'EUR': '€',
+            'CNY': '¥'
+        }
+        
+        # 格式化金額欄位（已經是 TWD，統一顯示 NT$）
+        if '金額' in detail_df.columns:
+            detail_df['金額'] = detail_df['金額'].apply(
+                lambda x: f"NT${int(x):,}" if pd.notna(x) and x != 0 else ""
+            )
+        
         # Header
         content = [detail_df.columns.tolist()]
         

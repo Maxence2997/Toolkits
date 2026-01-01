@@ -55,13 +55,14 @@ class FinanceDataParser:
         # 判斷交易類型：收入或支出
         df['交易類型'] = df['類別'].apply(lambda x: '收入' if str(x) == '收入' else '支出')
         
-        # 幣別轉換 TWD 並四捨五入
-        df['金額'] = (df['金額'] * df['匯率']).round().astype(int)
+        # 成員欄位保持原始金額（不轉換成 TWD）
         for m in self.members:
             related = [c for c in person_cols if c.startswith(m)]
-            df[m] = (df[related].max(axis=1) * df['匯率']).round().astype(int)
+            df[m] = df[related].max(axis=1).astype(int)
         
-        df['幣別'] = 'TWD'
+        # 金額欄位換算成 TWD
+        df['金額'] = (df['金額'] * df['匯率']).round().astype(int)
+        
         keep_cols = ['日期', 'Month', '交易類型', '類別', '名稱', '金額', '幣別'] + self.members
         self.df = df[keep_cols]
         
